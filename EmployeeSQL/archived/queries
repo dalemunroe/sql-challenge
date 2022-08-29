@@ -1,0 +1,146 @@
+departments
+-
+dept_no VARCHAR(5) PK 
+dept_name VARCHAR(30)
+
+
+dept_manager
+-
+id_dept_manager INT PK
+dept_no VARCHAR(5) FK >- departments.dept_no
+emp_no INT FK >- employees.emp_no
+
+
+titles
+-
+title_id VARCHAR(5) PK
+title VARCHAR(30)
+
+
+employees
+-
+emp_no INT PK
+emp_title_id VARCHAR(10) FK - titles.title_id
+birth_date DATE
+first_name  VARCHAR(20)
+last_name  VARCHAR(20)
+sex VARCHAR(1)
+hire_date DATE
+
+
+salaries
+-
+id_salaries INT PK
+emp_no INT FK - employees.emp_no
+salary INT
+
+
+dept_emp
+-
+id_dept_emp INT PK
+emp_no INT FK >- employees.emp_no
+dept_no VARCHAR(5) FK >- departments.dept_no
+
+SELECT * from departments
+SELECT * from dept_emp
+SELECT * from dept_manager
+SELECT * from employees
+SELECT * from salaries
+SELECT * from titles
+
+
+
+
+-- Exported from QuickDBD: https://www.quickdatabasediagrams.com/
+-- Link to schema: https://app.quickdatabasediagrams.com/#/d/FwtM5G
+-- NOTE! If you have used non-SQL datatypes in your design, you will have to change these here.
+
+
+CREATE TABLE "departments" (
+    "dept_no" VARCHAR(5)   NOT NULL,
+    "dept_name" VARCHAR(30)   NOT NULL,
+    CONSTRAINT "pk_departments" PRIMARY KEY (
+        "dept_no"
+     )
+);
+
+CREATE TABLE "dept_manager" (
+    "dept_no" VARCHAR(5)   NOT NULL,
+    "emp_no" INT   NOT NULL,
+    CONSTRAINT "pk_dept_manager" PRIMARY KEY (
+        "emp_no"
+     )
+);
+
+CREATE TABLE "titles" (
+    "title_id" VARCHAR(5)   NOT NULL,
+    "title" VARCHAR(30)   NOT NULL,
+    CONSTRAINT "pk_titles" PRIMARY KEY (
+        "title_id"
+     )
+);
+
+CREATE TABLE "employees" (
+    "emp_no" INT   NOT NULL,
+    "emp_title_id" VARCHAR(10)   NOT NULL,
+    "birth_date" DATE   NOT NULL,
+    "first_name" VARCHAR(20)   NOT NULL,
+    "last_name" VARCHAR(20)   NOT NULL,
+    "sex" VARCHAR(1)   NOT NULL,
+    "hire_date" DATE   NOT NULL,
+    CONSTRAINT "pk_employees" PRIMARY KEY (
+        "emp_no"
+     )
+);
+
+CREATE TABLE "salaries" (
+    "emp_no" INT   NOT NULL,
+    "salary" INT   NOT NULL,
+    CONSTRAINT "pk_salaries" PRIMARY KEY (
+        "emp_no"
+     )
+);
+
+CREATE TABLE "dept_emp" (
+    "emp_no" INT   NOT NULL,
+    "dept_no" VARCHAR(5)   NOT NULL
+);
+
+ALTER TABLE "dept_manager" ADD CONSTRAINT "fk_dept_manager_dept_no" FOREIGN KEY("dept_no")
+REFERENCES "departments" ("dept_no");
+
+ALTER TABLE "dept_manager" ADD CONSTRAINT "fk_dept_manager_emp_no" FOREIGN KEY("emp_no")
+REFERENCES "employees" ("emp_no");
+
+ALTER TABLE "employees" ADD CONSTRAINT "fk_employees_emp_title_id" FOREIGN KEY("emp_title_id")
+REFERENCES "titles" ("title_id");
+
+ALTER TABLE "salaries" ADD CONSTRAINT "fk_salaries_emp_no" FOREIGN KEY("emp_no")
+REFERENCES "employees" ("emp_no");
+
+ALTER TABLE "dept_emp" ADD CONSTRAINT "fk_dept_emp_emp_no" FOREIGN KEY("emp_no")
+REFERENCES "employees" ("emp_no");
+
+ALTER TABLE "dept_emp" ADD CONSTRAINT "fk_dept_emp_dept_no" FOREIGN KEY("dept_no")
+REFERENCES "departments" ("dept_no");
+
+
+COPY departments(dept_no,dept_name)
+FROM 'C:\Users\dalem\Desktop\WAUS-VIRTDATA-PT-06-2022-U-LOLC\Assignments\sql-challenge\EmployeeSQL\departments.csv'
+DELIMITER ','
+CSV HEADER;
+
+
+
+SELECT * from titles
+SELECT * from employees LIMIT 100
+SELECT * from salaries LIMIT 100
+SELECT * from departments
+SELECT * from dept_emp LIMIT 100
+SELECT * from dept_manager
+
+--1. List the following details of each employee: employee number, last name, first name, sex, and salary.
+SELECT employees.emp_no, employees.last_name, employees.first_name, employees.sex, salaries.salary
+FROM employees
+INNER JOIN salaries ON
+salaries.emp_no=employees.emp_no;
